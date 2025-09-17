@@ -5,6 +5,10 @@ const config = {
   db_uri: process.env.DB_URI,
   jwt_secret: process.env.JWT_SECRET,
   cors: process.env.CORS,
+
+  user: process.env.GMAIL_USER,
+  pass: process.env.GMAIL_PASS,
+
   cName: process.env.CNAME,
   cApi: process.env.CAPI_KEY,
   cSecret: process.env.CAPI_SECRET,

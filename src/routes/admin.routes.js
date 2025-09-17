@@ -1,7 +1,13 @@
-const { createAdmin } = require("../controllers/admin.controller");
+const {
+  createAdmin,
+  approveInstructor,
+} = require("../controllers/admin.controller");
+const isAdmin = require("../middleware/admin.check");
+const User = require("../middleware/user.check");
 
 const router = require("express").Router();
 
 router.post("/oc/createAdmin", createAdmin);
+router.post("/approveInstructor/:id", User, isAdmin, approveInstructor);
 
 module.exports = router;
