@@ -46,23 +46,6 @@ const updateCourseSchema = Joi.object({
   tags: Joi.array().items(Joi.string()),
 
   isPublished: Joi.boolean(),
-
-  enrolledStudents: Joi.array().items(
-    Joi.object({
-      studentId: Joi.string().hex().length(24),
-      enrolledAt: Joi.date(),
-      progress: Joi.number().min(0).max(100),
-    })
-  ),
-
-  reviews: Joi.array().items(
-    Joi.object({
-      studentId: Joi.string().hex().length(24),
-      rating: Joi.number().min(1).max(5),
-      comment: Joi.string().allow(""),
-      createdAt: Joi.date(),
-    })
-  ),
 });
 
 module.exports = { courseSchema, updateCourseSchema };

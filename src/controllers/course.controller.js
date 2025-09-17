@@ -86,12 +86,38 @@ const getCourse = async (req, res, next) => {
     next(error);
   }
 };
+
 const updateCourse = async (req, res, next) => {
   try {
+    const courseId = req.params.id;
+    const data = req.body;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return next(httpErrors(404, "Course not found"));
+    }
+
+    if (typeof data.tags === "string") {
+      try {
+        data.tags = JSON.parse(data.tags);
+      } catch (err) {
+        data.tags = [];
+      }
+    }
+
+    const updatedCourse = await Course.findByIdAndUpdate(courseId, data, {
+      new: true,
+      runValidators: true,
+    });
+
+    res
+      .status(200)
+      .json({ message: "Course Updated Successfully", course: updatedCourse });
   } catch (error) {
     next(error);
   }
 };
+
 const deleteCourse = async (req, res, next) => {
   try {
     const courseId = req.params.id;
