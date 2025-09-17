@@ -89,4 +89,19 @@ const approveInstructor = async (req, res, next) => {
   }
 };
 
-module.exports = { createAdmin, approveInstructor };
+const deleteProfile = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    const deleteUser = await User.findByIdAndDelete(userId);
+
+    if (!deleteUser) {
+      return next(createHttpError(400, "User Deletion Failed"));
+    }
+    res.status(200).json({ message: "User Deleted Successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createAdmin, approveInstructor, deleteProfile };
