@@ -107,7 +107,6 @@ const updateCourse = async (req, res, next) => {
 
     const updatedCourse = await Course.findByIdAndUpdate(courseId, data, {
       new: true,
-      runValidators: true,
     });
 
     res
