@@ -58,7 +58,8 @@ const login = async (req, res, next) => {
       return next(httpErrors(404, "User Not Found"));
     }
 
-    const checkPass = await bcrypt.compare(user.password, password);
+    const checkPass = await bcrypt.compare(password, user.password);
+
     if (!checkPass) {
       return next(httpErrors(401, "You're not an user"));
     }

@@ -23,10 +23,18 @@ const createCourse = async (req, res, next) => {
         res.end(stream);
       });
     };
-    if (!photo) {
+    if (!file) {
       return next(httpErrors(404, "Photo not found"));
     }
     const result = await streamBuffer(file.buffer);
+
+    if (req.body.tags) {
+      try {
+        req.body.tags = JSON.parse(req.body.tags);
+      } catch (err) {
+        req.body.tags = [];
+      }
+    }
 
     const course = new Course({
       ...data,
@@ -50,7 +58,7 @@ const getCourses = async (req, res, next) => {
   try {
     const courses = await Course.find();
 
-    if (!courses) {
+    if (courses.length === 0) {
       return next(httpErrors(404, "No Course Data Found"));
     }
     res.status(200).json({
@@ -64,6 +72,16 @@ const getCourses = async (req, res, next) => {
 
 const getCourse = async (req, res, next) => {
   try {
+    const courseId = req.params.id;
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return next(httpErrors(404, "No Course Data Found"));
+    }
+    res.status(200).json({
+      message: "Course Fetched",
+      course,
+    });
   } catch (error) {
     next(error);
   }
@@ -76,6 +94,14 @@ const updateCourse = async (req, res, next) => {
 };
 const deleteCourse = async (req, res, next) => {
   try {
+    const courseId = req.params.id;
+    const deletedCourse = await Course.findByIdAndDelete(courseId);
+
+    if (!deletedCourse) {
+      return next(httpErrors(400, "Course Didn't deleted"));
+    }
+
+    res.status(200).json({ message: "Course deleted Successfully" });
   } catch (error) {
     next(error);
   }

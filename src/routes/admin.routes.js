@@ -1,6 +1,7 @@
 const {
   createAdmin,
   approveInstructor,
+  rejectInstructor,
   deleteProfile,
 } = require("../controllers/admin.controller");
 const isAdmin = require("../middleware/admin.check");
@@ -9,7 +10,8 @@ const User = require("../middleware/user.check");
 const router = require("express").Router();
 
 router.post("/oc/createAdmin", createAdmin);
-router.post("/approveInstructor/:id", User, isAdmin, approveInstructor);
-router.post("/deleteProfile/:id", User, isAdmin, deleteProfile);
+router.put("/approveInstructor/:id", User, isAdmin, approveInstructor);
+router.put("/rejectInstructor/:id", User, isAdmin, rejectInstructor);
+router.delete("/deleteProfile/:id", User, isAdmin, deleteProfile);
 
 module.exports = router;

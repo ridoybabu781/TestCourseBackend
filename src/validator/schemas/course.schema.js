@@ -26,4 +26,43 @@ const courseSchema = Joi.object({
   isPublished: Joi.boolean().default(false),
 });
 
-module.exports = courseSchema;
+const updateCourseSchema = Joi.object({
+  title: Joi.string().trim().min(3).max(200),
+
+  description: Joi.string().min(10),
+
+  category: Joi.string().valid(...categories),
+
+  price: Joi.number().min(0),
+
+  discount: Joi.number().min(0),
+
+  level: Joi.string().valid(...levels),
+
+  language: Joi.string().min(2).max(50),
+
+  thumbnail: Joi.string(),
+
+  tags: Joi.array().items(Joi.string()),
+
+  isPublished: Joi.boolean(),
+
+  enrolledStudents: Joi.array().items(
+    Joi.object({
+      studentId: Joi.string().hex().length(24),
+      enrolledAt: Joi.date(),
+      progress: Joi.number().min(0).max(100),
+    })
+  ),
+
+  reviews: Joi.array().items(
+    Joi.object({
+      studentId: Joi.string().hex().length(24),
+      rating: Joi.number().min(1).max(5),
+      comment: Joi.string().allow(""),
+      createdAt: Joi.date(),
+    })
+  ),
+});
+
+module.exports = { courseSchema, updateCourseSchema };

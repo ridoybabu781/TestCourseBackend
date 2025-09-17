@@ -11,6 +11,6 @@ const router = require("express").Router();
 
 router.post("/register", validator(userSchema), createUser);
 router.post("/login", validator(loginSchema), login);
-router.post("/profile", User, profile);
+router.get("/profile", User, profile);
 
 module.exports = router;

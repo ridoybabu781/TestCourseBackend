@@ -1,6 +1,7 @@
 const createHttpError = require("http-errors");
 const User = require("../models/user.model");
 const sendMail = require("../utils/sendMail");
+const bcrypt = require("bcrypt");
 
 const createAdmin = async (req, res, next) => {
   try {
@@ -10,8 +11,11 @@ const createAdmin = async (req, res, next) => {
       return next(createHttpError(404, "Something is missing"));
     }
 
+    const hashedPass = await bcrypt.hash(password, 10);
+
     const user = new User({
       ...req.body,
+      password: hashedPass,
     });
 
     await user.save();
@@ -69,13 +73,82 @@ const approveInstructor = async (req, res, next) => {
             </tr>
             <tr>
               <td style="padding:12px; text-align:center; background:#f3f4f6; font-size:12px; color:#6b7280; border-radius:0 0 6px 6px;">
-                <p style="margin:0;">&copy; ${new Date().getFullYear()} Your Platform. All rights reserved.</p>
+                <p style="margin:0;">&copy; ${new Date().getFullYear()} Test Course Backend. All rights reserved.</p>
               </td>
             </tr>
           </table>
         </body>
       </html>
       `;
+
+    await sendMail(
+      instructor.email,
+      "Instructor Account Approved",
+      approvalHtml
+    );
+
+    res.status(200).json({ message: "Instructor Approval Accepted" });
+  } catch (error) {
+    next();
+  }
+};
+
+const rejectInstructor = async (req, res, next) => {
+  try {
+    const instructorId = req.params.id;
+
+    console.log(instructorId);
+
+    const instructor = await User.findByIdAndUpdate(
+      instructorId,
+      {
+        isInstructor: "no",
+      },
+      { new: true }
+    );
+
+    console.log(instructor);
+
+    if (!instructor) {
+      return next(createHttpError(404, "Instructor not found"));
+    }
+
+    const rejectionHtml = `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Instructor Account Rejected</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; background:#f9fafb; margin:0; padding:20px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px; margin:auto; background:#ffffff; border:1px solid #e5e7eb; border-radius:6px;">
+          <tr>
+            <td style="padding:20px; text-align:center; background:#b91c1c; color:#ffffff; border-radius:6px 6px 0 0;">
+              <h2 style="margin:0;">Instructor Account Rejected</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px; color:#111827;">
+              <p style="font-size:16px; margin-bottom:12px;">Hello ${
+                instructor.name || "Instructor"
+              },</p>
+              <p style="margin:0 0 16px 0; line-height:1.5; color:#374151;">
+                We regret to inform you that your instructor account request has been rejected. You cannot create courses at this time.
+              </p>
+              <p style="margin:0; color:#6b7280; font-size:14px;">
+                If you have any questions or believe this was a mistake, please contact support.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px; text-align:center; background:#f3f4f6; font-size:12px; color:#6b7280; border-radius:0 0 6px 6px;">
+              <p style="margin:0;">&copy; ${new Date().getFullYear()} Test Course Backend. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+    `;
 
     await sendMail(
       instructor.email,
@@ -104,4 +177,9 @@ const deleteProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { createAdmin, approveInstructor, deleteProfile };
+module.exports = {
+  createAdmin,
+  approveInstructor,
+  rejectInstructor,
+  deleteProfile,
+};
