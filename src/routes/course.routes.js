@@ -34,6 +34,6 @@ router.put(
   validator(updateCourseSchema),
   updateCourse
 );
-router.put("/deleteCourse/:id", User, isInstructor, deleteCourse);
+router.delete("/deleteCourse/:id", User, isInstructor, deleteCourse);
 
 module.exports = router;
