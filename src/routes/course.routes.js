@@ -25,8 +25,8 @@ router.post(
   createCourse
 );
 
-router.post("/getCourses", getCourses);
-router.post("/getCourse/:id", getCourse);
+router.get("/getCourses", getCourses);
+router.get("/getCourse/:id", getCourse);
 router.put(
   "/updateCourse/:id",
   User,
